@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
+    //forRoot: Configuracion para el manejo de variables de entorno
     ConfigModule.forRoot(),
-
+        
     TypeOrmModule.forRoot({
       type: 'postgres',
       host:  process.env.DB_HOST ,
@@ -16,6 +18,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true, // va creando las entidades automaticamente
       synchronize: true, //cualquier cambio en las entidades las sincroniza, false en prod
     }),
+        
+    ProductsModule,
   ],
 })
 export class AppModule {}
