@@ -1,10 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Product {
   
 @PrimaryGeneratedColumn('uuid')
-id:number
+id:string
 
 @Column('text',{
     unique:true
@@ -16,7 +16,7 @@ title:string
 })
 price:number
 
-// otra manera de especificar lso tipos en typeORM
+// otra manera de especificar los tipos en typeORM
 @Column({
     type:'text',
     nullable:true
@@ -40,8 +40,23 @@ sizes:string[]
 
 //tags
 //images
+
 @Column('text')
 gender:string
-}
 
+
+// BEFORE INSERT : SIRVE PARA VALIDAR LAS PROPIEDADES ANTES DE INSERTAR
+// creamos una funcion para validar SI NO VIENE EL SLUG,ENTONCES LO CREA A PARTIR DEL TITULO
+    @BeforeInsert()
+    checkSlugInsert(){
+    if(!this.slug){
+        this.slug=this.title
+     }
+     this.slug=this.slug
+     .toLocaleLowerCase()
+     .replaceAll(' ','_')
+     .replaceAll("'",'')
+    }
+    // NOTA: para usar replaceAll() es necesario modificar la version del target  ES20XX a ES2021, para ello dirigirse al archivo tsconfig.json y cambiar la propiedad   "target" a   "target": "ES2021"
+}
 
