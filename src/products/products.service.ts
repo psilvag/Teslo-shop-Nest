@@ -1,11 +1,11 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { PaginationDTO } from '../common/DTOS/pagination.dto';
-
+import {validate as isUUID} from 'uuid'  //uuid tiene una funcion para validar un uuid
 
 @Injectable()
 export class ProductsService {
@@ -40,17 +40,48 @@ export class ProductsService {
     //  relaciones entre las tablas      
   })}
   
-  async findOne( id: string) {
-    const product = await this.productRepository.findOneBy({id})
+  async findOne( term: string) {
+    let product:Product
+    if(isUUID(term)){
+      product = await this.productRepository.findOneBy({id:term})
+    }else{
+
+      // las query Builder son funciones que nos ayudan a crear querys mas robustas
+      // si queremos buscar por titulo en las querys , con la query builder evitamos que se escriba mal o se haga SQL inyection
+      const queryBuilder=this.productRepository.createQueryBuilder()
+      product= await queryBuilder
+      .where('UPPER(title) =:title or slug=:slug',{
+        title:term.toUpperCase().trimEnd(),
+        slug:term.toLowerCase().trimEnd(),
+      }).getOne() // getOne() solo quiero uno o el titulo o el slug
+    }
+    
     if(!product){
-      throw new BadRequestException('Product with ID not found')
+      throw new BadRequestException(`Product with ${term} NOT Found`)
     }
     return product
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+ async update(id: string, updateProductDto: UpdateProductDto) {
+  // buscamos el producto por id y lo preparamos para la actualizacion
+
+  const product =await this.productRepository.preload({
+    id:id,
+    ...updateProductDto
+  })
+  if(!product){
+    throw new NotFoundException(`Product with ID "${id}" not found`);
   }
+  try{
+    await this.productRepository.save(product)
+  }catch(error){
+    this.handleExceptions(error)
+  }
+  
+  return product
+  }
+
+
   async remove(id: string) {
     const product = await this.findOne(id)
     await  this.productRepository.remove(product)

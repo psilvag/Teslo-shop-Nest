@@ -32,4 +32,9 @@ export class CreateProductDto {
   @IsIn(['men','women','kid','unisex'])// Validamos que el valor que venga en gender se encuentre dentro de ese array IsIn()
   gender:string
   
+  @IsString({each:true})
+  @IsArray()
+  @IsOptional()
+  tags:string[]
+  
 }

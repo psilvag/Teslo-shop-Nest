@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Product {
@@ -38,7 +38,13 @@ stock:number
 })
 sizes:string[]
 
-//tags
+@Column({
+    type:'text',
+    array:true,
+    default:[]
+})
+tags:string[]
+
 //images
 
 @Column('text')
@@ -58,5 +64,12 @@ gender:string
      .replaceAll("'",'')
     }
     // NOTA: para usar replaceAll() es necesario modificar la version del target  ES20XX a ES2021, para ello dirigirse al archivo tsconfig.json y cambiar la propiedad   "target" a   "target": "ES2021"
+    @BeforeUpdate()
+    checkSlugUpdate(){
+       this.slug=this.slug
+       .toLocaleLowerCase()
+       .replaceAll("'",'')
+       .replaceAll(' ','_')
+    }
 }
 
