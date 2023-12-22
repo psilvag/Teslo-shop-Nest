@@ -1,4 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ProductImage } from './product-image.entity';
 
 @Entity()
 export class Product {
@@ -45,7 +46,14 @@ sizes:string[]
 })
 tags:string[]
 
-//images
+@OneToMany(
+   () => ProductImage,
+   (productImage)=>productImage.product,
+   {cascade:true,
+    eager:true // eager: permite que cuando busquemos por cualquier find automaticamente relaciona y carga la relacion
+   }
+)
+images?:ProductImage[]
 
 @Column('text')
 gender:string

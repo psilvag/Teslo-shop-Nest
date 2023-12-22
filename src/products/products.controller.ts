@@ -23,7 +23,7 @@ export class ProductsController {
 
   @Get(':term')  // PasseUUIDPipe valida que el id sea un uuid valido
   findOne(@Param('term') term: string) {
-    return this.productsService.findOne(term);
+    return this.productsService.findOnePlain(term);
   }
 
   @Patch(':id')
