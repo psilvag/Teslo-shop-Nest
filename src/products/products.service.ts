@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product,ProductImage } from './entities';
@@ -17,7 +17,8 @@ export class ProductsService {
     @InjectRepository(Product) // Inyectamos nuestra entity
     private readonly productRepository:Repository<Product>, //es de tipo repository  
     @InjectRepository(ProductImage)
-    private readonly productImageRepository:Repository<ProductImage>
+    private readonly productImageRepository:Repository<ProductImage>,
+    private readonly dataSource:DataSource
   ){}
 
 
@@ -67,6 +68,7 @@ export class ProductsService {
 
       // las query Builder son funciones que nos ayudan a crear querys mas robustas
       // si queremos buscar por titulo en las querys , con la query builder evitamos que se escriba mal o se haga SQL inyection
+       // -------USAMOS QUERY RUNNER------------
       const queryBuilder=this.productRepository.createQueryBuilder('prod')// es un alias para las relaciones
       product= await queryBuilder
       .where('UPPER(title) =:title or slug=:slug',{
@@ -82,7 +84,10 @@ export class ProductsService {
     }
     return product
   }
- // esta funcion sirve para no modificar 
+
+
+
+ // esta funcion sirve para no modificar el estado en el que se devuelve el producto
  async findOnePlain(term:string){
   const {images=[], ...rest}=await this.findOne(term)
   return {
@@ -94,22 +99,46 @@ export class ProductsService {
 
  async update(id: string, updateProductDto: UpdateProductDto) {
   // buscamos el producto por id y lo preparamos para la actualizacion
+  const {images,...toUpdate}=updateProductDto
+  const product =await this.productRepository.preload({id,...toUpdate})
 
-  const product =await this.productRepository.preload({
-    id:id,
-    ...updateProductDto,
-    images:[]
-  })
   if(!product){
     throw new NotFoundException(`Product with ID "${id}" not found`);
   }
+  
+  //Transacciones: permite ejecutar varias querys SQL y si todo esta bien lo impacta sobre la DB sino se puede revertir:
+  // -------USAMOS QUERY RUNNER------------
+  // dataSource importamos de typeOrm contiene toda la informacion de la DB,como conexion, relaciones etc.
+  const queryRunner=this.dataSource.createQueryRunner()// el queryRunner no cambia nada en la DB hasta ejecutar un commit
+  await queryRunner.connect()
+  await queryRunner.startTransaction()
   try{
-    await this.productRepository.save(product)
+    // si hay imagenes nuevas en el update
+    if(images){
+      // elimina las imagenes que estan presentes
+       await queryRunner.manager.delete(ProductImage,{product:{id}})
+       // creamos una instancia nueva para cada imagen
+       product.images=images.map(
+        image=>this.productImageRepository.create({url:image}))
+        
+    }
+    await queryRunner.manager.save(product)
+    //await this.productRepository.save(product)
+
+    // APLICAMOS EL COMMIT SI TODO ESTA BIEN
+    await queryRunner.commitTransaction()
+    // Finalizamos el query Runner si deseamos usarlo de nuevo, debemos volver a conectarnos
+    await queryRunner.release()
+    // si no vienen imagenes retornamos las imagenes actuales que estan en el producto
+    return this.findOnePlain(id)
+
   }catch(error){
+    await queryRunner.rollbackTransaction()
+    await queryRunner.release()
     this.handleExceptions(error)
   }
   
-  return product
+ 
   }
 
 
@@ -126,5 +155,21 @@ export class ProductsService {
     this.logger.error(error)
     throw new InternalServerErrorException('Expect server error, check server logs')
   }
+
+// Esta parte es para borrar toda la tabla de PRODUCTOS, crearemos un seed de productos para manejarlo en desarrollo y este metodo sirve para eliminar todo y volver a ejecutar el seed
+
+async deleteAllProducts() {
+  const query= this.productRepository.createQueryBuilder()
+  try{
+    return await query
+    .delete()
+    .where({}) // ({}) estamos diciendo borrar todo
+    .execute()
+  }catch(error){
+    this.handleExceptions(error)
+  }
+}
+
+
 
 }
