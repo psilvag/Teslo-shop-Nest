@@ -12,6 +12,6 @@ import { Product,ProductImage } from './entities';
     // Importamos nuestras entitys en el array de forFeature
     TypeOrmModule.forFeature([Product,ProductImage])
   ],
-  exports:[ProductsService,TypeOrmModule] //TypeOrmModule lo importamos para usar los repositorios de ese modulo
+  exports:[ProductsService,TypeOrmModule] //TypeOrmModule lo importamos para usar los repositorios en otro modulo
 })
 export class ProductsModule {}

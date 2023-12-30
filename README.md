@@ -14,13 +14,13 @@ yarn install
 ```
 docker-compose up -d
 ```
-6. Ejecutar SEED para llenar la data
-```
-localhost:3000/api/seed
-```
-7. Ejecutar la aplicacion en desarrollo
+6. Ejecutar la aplicacion en desarrollo
 ```
 yarn start:dev
+```
+7. Ejecutar SEED para llenar la data
+```
+localhost:3000/api/seed
 ```
 
 ### Nota: 
