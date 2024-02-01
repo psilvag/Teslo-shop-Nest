@@ -11,7 +11,9 @@ export class User {
     })
     email:string
 
-    @Column('text')
+    @Column('text',{
+        select:false    // con select false, evitamos que retorne la columna del password 
+    })
     password:string
 
     @Column('text')
