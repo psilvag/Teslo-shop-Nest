@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 
@@ -17,5 +18,13 @@ export class AuthController {
   loginUser(@Body() loginUserDto:LoginUserDto){
    return this.authService.login(loginUserDto)
   }
-  
+
+  @Get('private')
+  @UseGuards(AuthGuard())   // los guards permiten o previenen el acceso a una ruta
+  testingPrivateRoute(){
+    return {
+      ok:true,
+      message:'hola private'
+    }
+  }
 }
