@@ -9,9 +9,6 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 
 
-
-
-
 @Injectable()
 export class AuthService {
   
@@ -33,7 +30,7 @@ export class AuthService {
       delete user.password
       return {
         ...user,
-        token:this.getJwtToken({email:user.email})
+        token:this.getJwtToken({id:user.id})
        }
 
      }catch(error){
@@ -46,7 +43,7 @@ export class AuthService {
    const user= await this.userRepository.findOne({
     where:{email},
     // con select incluimos los campos que queremos en el return
-    select:{email:true, password:true}
+    select:{email:true, password:true, id:true}
    })
    if(!user){
     throw new UnauthorizedException('Credentials are not valid (email)') 
@@ -57,7 +54,7 @@ export class AuthService {
 
    return {
     ...user,
-    token:this.getJwtToken({email:user.email})
+    token:this.getJwtToken({id:user.id})
    }
    
    

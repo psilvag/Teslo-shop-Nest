@@ -1,6 +1,6 @@
 1. Error al instalar bcrypt
 Solucion:
-En powerSheel o una nueva terminal ejecutar:
+En powerShell Windows o una nueva terminal ejecutar:
 
     npm install -g node-gyp
     
@@ -16,3 +16,7 @@ PARA INSTALACION DE PASSPORT
 yarn add @nestjs/passport passport 
 yarn add @nestjs/jwt passport-jwt
 yarn add -D  @types/passport-jwt
+
+
+///  crear un  guard con nest
+nest g gu auth/guards/userRole --no-spec
