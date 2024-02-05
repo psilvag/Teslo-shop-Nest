@@ -3,6 +3,7 @@ import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product,ProductImage } from './entities';
+import { AuthModule } from '../auth/auth.module';
 
 
 @Module({
@@ -10,7 +11,8 @@ import { Product,ProductImage } from './entities';
   providers: [ProductsService],
   imports:[
     // Importamos nuestras entitys en el array de forFeature
-    TypeOrmModule.forFeature([Product,ProductImage])
+    TypeOrmModule.forFeature([Product,ProductImage]),
+    AuthModule
   ],
   exports:[ProductsService,TypeOrmModule] //TypeOrmModule lo importamos para usar los repositorios en otro modulo
 })

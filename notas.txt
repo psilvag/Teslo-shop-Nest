@@ -20,3 +20,8 @@ yarn add -D  @types/passport-jwt
 
 ///  crear un  guard con nest
 nest g gu auth/guards/userRole --no-spec
+
+/// Si los decoradores no son propios entonces usamos el comando de nest para crear los nuevos decoradores
+
+nest g d auth/decorators/roleProtected --no-spec
+                                                          

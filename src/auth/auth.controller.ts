@@ -1,11 +1,13 @@
 import { Controller, Get, Post, Body, UseGuards, Req, SetMetadata } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { GetUser, RawHeaders } from './decorators';
+import { Auth, GetUser, RawHeaders } from './decorators';
+import { RoleProtected } from './decorators/role-protected.decorator';
 
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { UserRoleGuard } from './guards/user-role/user-role.guard';
+import { ValidRoles } from './interfaces/valid-roles.interface';
 
 
 @Controller('auth')
@@ -32,7 +34,7 @@ export class AuthController {
   testingPrivateRoute(
     @GetUser() user:User,
     @GetUser('email') userEmail:string, 
-    @RawHeaders() rawHeaders:string[]){
+    @RawHeaders() rawHeaders:string[]){ // rawheaders lo hacemos para ver la info del request
 
     return {
       ok:true,
@@ -43,9 +45,12 @@ export class AuthController {
   }
   
   @Get('private2')
-  //Metada : sirve para añadir informacion extra al metodo o controlador que quiero ejecutar
+  //Metadata : sirve para añadir informacion extra al metodo o controlador que quiero ejecutar
   //Nuestro custom decorator vera esta metadata y en funcion al usuario y sus roles dara permisos
-  @SetMetadata('roles',['admin','super-user'])
+
+  //@SetMetadata('roles',['admin','super-user'])
+  @RoleProtected(ValidRoles.superUser,ValidRoles.user) // Valid roles viene de nuestra interface
+
   //si son guards personalizados usualmente no usamos los parentesis es decir queda UserRoleGuard
   @UseGuards(AuthGuard(),UserRoleGuard) 
   privateRoute2( @GetUser() user:User){
@@ -54,4 +59,18 @@ export class AuthController {
       user,
     }
   }
+
+  // usaremos composicion de decoradores, cuando queremos componer un DECORADOR basado en otros deocoradores, en vez de colocar @RoleProtected, @UseGuard etc lo pondremos todo en uno
+
+  @Get('private3')
+  @Auth(ValidRoles.admin,ValidRoles.superUser)// Auth seria el decorador final
+  privateRoute3(@GetUser() user:User){
+    return {
+      ok:true,
+      user,
+    }
+
+  }
+
+
 }
