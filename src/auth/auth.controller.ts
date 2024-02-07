@@ -25,6 +25,13 @@ export class AuthController {
    return this.authService.login(loginUserDto)
   }
 
+  //Este endpoint revalida el token generando un nuevo token enb base al otro
+  @Get('check-status')
+  @Auth()
+  checkAuthStatus(@GetUser() user :User){
+    return this.authService.checkAuth(user)
+   }
+
   @Get('private')
   @UseGuards(AuthGuard())   // los guards permiten o previenen el acceso a una ruta
   // aqui podemos obtener el usuario con el decorador @Req() de express y quedaria asi:

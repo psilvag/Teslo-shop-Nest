@@ -1,5 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ProductImage } from './product-image.entity';
+import { User } from '../../auth/entities/user.entity';
 
 @Entity({name:'products'})
 export class Product {
@@ -46,6 +47,8 @@ sizes:string[]
 })
 tags:string[]
 
+
+
 @OneToMany(
    () => ProductImage,
    (productImage)=>productImage.product,
@@ -79,5 +82,17 @@ gender:string
        .replaceAll("'",'')
        .replaceAll(' ','_')
     }
+
+
+    // RELACION  MUCHOS A UNO CON LA TABLA USER   MANY-->TO->ONE
+    // MUCHOS PRODUCTOS SON CREADOS POR UN USUARIO
+
+    @ManyToOne(
+        ()=>User,
+        (user)=>user.product,
+        {eager:true} // eager sirve para que cargue automaticamente la relacion con el usuario, y cuando se pida algun producto tambien traiga al usuario que lo creo
+    )
+    user:User
+
 }
 

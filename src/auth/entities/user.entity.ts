@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, OneToMany } from 'typeorm';
+import { Product } from '../../products/entities/product.entity';
 
 
 @Entity()
@@ -30,6 +31,20 @@ export class User {
      })
     roles:string[]
 
+    // RELACION UNO A MUCHOS CON LA TABLA PRODUCTO  ONE->TO->MANY
+    // UN USUARIO PUEDE CREAR MUCHOS PRODUCTOS
+    @OneToMany(
+        ()=>Product,
+        (product)=>product.user
+    )
+    product:Product  
+
+
+
+
+
+
+    
     @BeforeInsert()
     checkFieldBeforeInsert(){
         this.email=this.email.toLowerCase().trim()

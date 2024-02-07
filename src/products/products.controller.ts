@@ -6,6 +6,8 @@ import { ParseUUIDPipe } from '@nestjs/common/pipes';
 import { PaginationDTO } from '../common/DTOS/pagination.dto';
 import { Auth } from 'src/auth/decorators';
 import { ValidRoles } from '../auth/interfaces/valid-roles.interface';
+import { User } from '../auth/entities/user.entity';
+import { GetUser } from '../auth/decorators/get-user.decorator';
 
 @Controller('products')
 //@Auth()   // con esto le decimos que para usar cualquiera de estas rutas debe estar autenticado
@@ -14,9 +16,10 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @Auth(ValidRoles.admin)
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  @Auth()  // con GetUser:obtenemos el usuario logueado
+  create(@Body() createProductDto: CreateProductDto,
+        @GetUser() user:User )  {
+    return this.productsService.create(createProductDto,user);
   }
 
   @Get()
@@ -33,8 +36,9 @@ export class ProductsController {
   @Auth(ValidRoles.admin)
   update(
   @Param('id',ParseUUIDPipe)id: string,  // ParseUUIDPipe valida que el id sea un uuid valido
-  @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(id, updateProductDto);
+  @Body() updateProductDto: UpdateProductDto,
+  @GetUser() user:User) {
+    return this.productsService.update(id, updateProductDto,user);
   }
 
   @Delete(':id')

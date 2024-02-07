@@ -31,20 +31,22 @@ export class FilesController {
   // el interceptor capta la data de la solicitud y lo intercepta
   //FileInterceptor solo funciona  con express  y el nombre "file" viene del nombre de la key del archivo. Ej en postman o ThunderClient:  file:nombreArchivoSeleccionado 
   @UseInterceptors(FileInterceptor('file',{
-    fileFilter:fileFilter,
+    fileFilter:fileFilter,// fileFilter: es una funcion creada por nosotros
     //limits:{fileSize:1000} agregamos los limites que queremos para nuestros archivos
-    storage:diskStorage({ // es donde lo almacenamos fisicamente ,diskStorage lo importamos de Multer
+    storage:diskStorage({ // en donde estamos almacenando fisicamente las imagenes ,          diskStorage lo importamos de Multer
       destination:'./static/products',
-      filename:fileNamer
+      filename:fileNamer // fileNamer: es una funcion creada por nosotros
     }) 
   }))
+
   upLoadProductImage(@UploadedFile() file:Express.Multer.File){
     if(!file){
       throw new BadRequestException('Make sure that the file is an image')
-    }
+    } 
     const secureURL=`${this.configService.get('HOST_API')}/files/product/${file.filename}`
     return {
       secureURL
+      
     }
   }
   
