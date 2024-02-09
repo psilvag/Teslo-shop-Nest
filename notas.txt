@@ -27,3 +27,12 @@ nest g d auth/decorators/roleProtected --no-spec
                                                           
 ------------------DOCUMENTACION CON SWAGGER-----------------
 yarn add @nestjs/swagger
+
+------------------INSTALACION DE WEBSOCKETS-----------------
+
+* Creamos el modulo websocket y seleccionamos la opcion NO en la generacion de cruds con websockets 
+nest g res messageWS --no-spec
+*instalamos websockets
+yarn add @nestjs/websockets @nestjs/platform-socket.io
+*instalamos socket.io
+yarn add socket.io
