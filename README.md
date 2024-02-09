@@ -10,7 +10,7 @@ yarn install
 ```
 3. Copiar el archivo .env.template y renombrarlo como .env
 4. Llenar las variables de entorno en funcion a la aplicacion
-5. Levantar la base de datos
+5. Levantar la base de datos en docker
 ```
 docker-compose up -d
 ```
@@ -22,7 +22,12 @@ yarn start:dev
 ```
 localhost:3000/api/seed
 ```
+8. Ir a la documentacion de la API
+```
+localhost:3000/api
+```
 
 ### Nota: 
-* La aplicacion usa docker como la base de datos postgres, y no logra establecer una conexion con postgres en Docker si se TIENE INSTALADO POSTGRES EN LA PC, **ES NECESARIO DESINSTALAR POSTGRES DE LA PC** para lograr la conexion.
+* La aplicacion levanta un contenedor de docker basada en la imagen de **POSTGRES 14.3** como base de datos
+* Si la app no logra establecer una conexion con nuestra base de datos, es por el conflicto de los puertos, esto ocurre porque ya tenemos instalado postgres en nuestra PC; para solucionarlo, **ES NECESARIO DESINSTALAR POSTGRES DE LA PC** y luego verificar nuevamente la conexion.
 

@@ -1,23 +1,45 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ApiProperty } from "@nestjs/swagger/dist/decorators";
 import { ProductImage } from './product-image.entity';
 import { User } from '../../auth/entities/user.entity';
 
+
 @Entity({name:'products'})
 export class Product {
-  
+
+@ApiProperty({
+    example:'cd333409-f3f4-56c9-a3d4-7dc3dt80c5f5',
+    description:'Product id',
+    uniqueItems:true
+})    
 @PrimaryGeneratedColumn('uuid')
 id:string
 
+@ApiProperty({
+    example:'T-Shirt Teslo',
+    description:'Product Title',
+    uniqueItems:true
+})  
 @Column('text',{
     unique:true
 })
 title:string
 
+@ApiProperty({
+    example:0,
+    description:'Product price',
+   
+})  
 @Column('float',{// number no es soportado por postgres, solo numeric
     default:0
 })
 price:number
 
+@ApiProperty({
+    example:'Lorem Ipsum color nulla imn anim mollit',
+    description:'Product description'
+    
+})  
 // otra manera de especificar los tipos en typeORM
 @Column({
     type:'text',
@@ -25,21 +47,52 @@ price:number
 })
 description:string
 
+@ApiProperty({
+    example:'T-shirt Teslo',
+    description:'Product Slug',
+    uniqueItems:true
+})  
 @Column('text',{
     unique:true
 })
 slug:string
 
+@ApiProperty({
+    example:10,
+    description:'Product stock',
+    default:0
+})  
 @Column('int',{
     default:0
 })
 stock:number
 
+
+@ApiProperty({
+    example:['X,XL,M'],
+    description:'Product sizes'
+
+})  
 @Column('text',{
     array:true
 })
 sizes:string[]
 
+
+@ApiProperty({
+    example:'women',
+    description:'Product gender'
+    
+})  
+@Column('text')
+gender:string
+
+
+@ApiProperty({
+    example:['sweatshirt'],
+    description:'Product tags'
+    
+})  
 @Column({
     type:'text',
     array:true,
@@ -49,6 +102,7 @@ tags:string[]
 
 
 
+@ApiProperty()  
 @OneToMany(
    () => ProductImage,
    (productImage)=>productImage.product,
@@ -58,8 +112,6 @@ tags:string[]
 )
 images?:ProductImage[]
 
-@Column('text')
-gender:string
 
 
 // BEFORE INSERT : SIRVE PARA VALIDAR LAS PROPIEDADES ANTES DE INSERTAR

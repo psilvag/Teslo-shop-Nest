@@ -25,3 +25,5 @@ nest g gu auth/guards/userRole --no-spec
 
 nest g d auth/decorators/roleProtected --no-spec
                                                           
+------------------DOCUMENTACION CON SWAGGER-----------------
+yarn add @nestjs/swagger
