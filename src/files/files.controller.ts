@@ -2,7 +2,7 @@ import { Controller, Get, Post ,Param,BadRequestException } from '@nestjs/common
 import { Res, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
 import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Response } from 'express';
 import { diskStorage } from 'multer';
@@ -18,8 +18,9 @@ export class FilesController {
    
     private readonly filesService: FilesService,
     private readonly configService:ConfigService) {} //ConfigService  lo importamos de Nest para manejar las variables de entorno  en este modulo
-    //-*OJO !: Se debe importar configService en el modulo files, asi: imports:[ConfigModule]
-  
+    //-*OJO !: Se debe importar configService en el modulo files, ->: imports:[ConfigModule]
+  @ApiResponse({status:200,description:'Return image request'})
+  @ApiResponse({status:404,description:'Image not found'})
   @Get('product/:imageName')
   // al utilizar res le quitamos a nest el control de la repuesta, es decir nosostros controlamos la respuesta 
   findProductImage(@Res() res:Response, @Param('imageName') imageName:string){
@@ -27,8 +28,9 @@ export class FilesController {
    res.sendFile(path) // regresamos el archivo que esta en ese path
   }
 
-
-
+  
+  @ApiResponse({status:201,description:'Image created'})
+  @ApiResponse({status:400,description:'Bad request'})
   @Post('product')
   // el interceptor capta la data de la solicitud y lo intercepta
   //FileInterceptor solo funciona  con express  y el nombre "file" viene del nombre de la key del archivo. Ej en postman o ThunderClient:  file:nombreArchivoSeleccionado 

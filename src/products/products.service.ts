@@ -167,10 +167,6 @@ async deleteAllProducts() {
   }
 }
 
-
-
-
-
 private handleExceptions(error:any){    
   // si hacemos un console.log(error) veremos un objeto que tiene una propiedad code=23505
   if(error.code==='23505'){

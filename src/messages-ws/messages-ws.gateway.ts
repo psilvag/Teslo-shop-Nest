@@ -4,6 +4,7 @@ import { MessagesWsService } from './messages-ws.service';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../auth/interfaces';
 import{NewMessageDTO} from './dtos/new-message.dto'
+import { ApiTags } from '@nestjs/swagger';
 
 
 //Los GateWays son como los controladores

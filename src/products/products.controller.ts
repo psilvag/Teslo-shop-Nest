@@ -31,20 +31,28 @@ export class ProductsController {
   @ApiResponse({status:403,description:'Forbidden Token related'})
   
   create(@Body() createProductDto: CreateProductDto,
-        @GetUser() user:User )  {
+         @GetUser() user:User )  {
     return this.productsService.create(createProductDto,user);
   }
 
+  @ApiResponse({status:200,description:'Find all Products,optional pagination Querys: limit&offset'})
+  @ApiResponse({status:400,description:'Bad request'})
   @Get()
   findAll(@Query() paginationDTO:PaginationDTO) {
     return this.productsService.findAll(paginationDTO);
   }
-
+  
+  @ApiResponse({status:200,description:'Find product by ID,title o slug-name', type:Product})
+  @ApiResponse({status:400,description:'Bad request'})
+  @ApiResponse({status:404,description:'Item not Found'})
   @Get(':term') 
   findOne(@Param('term') term: string) {
     return this.productsService.findOnePlain(term);
   }
 
+
+  @ApiResponse({status:200,description:'Product was uptaded succesfully', type:Product})
+  @ApiResponse({status:400,description:'Bad request'})
   @Patch(':id')
   @Auth(ValidRoles.admin)
   update(
@@ -54,6 +62,7 @@ export class ProductsController {
     return this.productsService.update(id, updateProductDto,user);
   }
 
+  @ApiResponse({status:204,description:'Product deleted succesfully'})
   @Delete(':id')
   @Auth(ValidRoles.admin)
   remove(@Param('id',ParseUUIDPipe) id: string) {

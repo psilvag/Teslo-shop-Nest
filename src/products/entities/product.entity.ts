@@ -26,8 +26,9 @@ id:string
 title:string
 
 @ApiProperty({
-    example:0,
+    example:45.89,
     description:'Product price',
+    default:0
    
 })  
 @Column('float',{// number no es soportado por postgres, solo numeric
@@ -37,7 +38,8 @@ price:number
 
 @ApiProperty({
     example:'Lorem Ipsum color nulla imn anim mollit',
-    description:'Product description'
+    description:'Product description',
+    nullable:true
     
 })  
 // otra manera de especificar los tipos en typeORM
@@ -70,7 +72,8 @@ stock:number
 
 @ApiProperty({
     example:['X,XL,M'],
-    description:'Product sizes'
+    description:'Product sizes',
+    type:"array strings"
 
 })  
 @Column('text',{
@@ -90,8 +93,9 @@ gender:string
 
 @ApiProperty({
     example:['sweatshirt'],
-    description:'Product tags'
-    
+    description:'Product tags',
+    default:[],
+    type:"array strings"
 })  
 @Column({
     type:'text',
